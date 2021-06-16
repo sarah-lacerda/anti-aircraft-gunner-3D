@@ -29,7 +29,7 @@ public class TriangleMesh {
         return triangles;
     }
 
-    public static TriangleMesh loadFrom(String filepath) {
+    public static TriangleMesh loadFromTRI(String filepath) {
         if (!filepath.endsWith(".tri")) {
             throw new FailedToLoadResourceException("TriangleMesh", filepath, "Not a TRI file!");
         }
