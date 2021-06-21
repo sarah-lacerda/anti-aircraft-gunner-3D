@@ -22,4 +22,8 @@ public class Vertex {
     public float getZ() {
         return z;
     }
+
+    public static Vertex vertex(float x, float y, float z) {
+        return new Vertex(x, y, z);
+    }
 }

@@ -1,12 +1,16 @@
 package util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import exception.FailedToLoadResourceException;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class FileUtils {
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private FileUtils() {
     }
@@ -24,5 +28,13 @@ public class FileUtils {
 
     public static BufferedReader getBufferedReaderForFile(String filePath) {
         return new BufferedReader(new InputStreamReader(getFileFromResourceAsStream(filePath)));
+    }
+
+    public static <T> T deserializeFrom(String filePath, Class<T> targetClass) {
+        try {
+            return OBJECT_MAPPER.readValue(getFileFromResourceAsStream(filePath), targetClass);
+        } catch (IOException e) {
+            throw new FailedToLoadResourceException(targetClass.getName(), filePath, e);
+        }
     }
 }

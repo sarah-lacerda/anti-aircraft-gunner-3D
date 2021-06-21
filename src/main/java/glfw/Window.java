@@ -4,7 +4,7 @@ import glfw.listener.KeyListener;
 import glfw.listener.WindowResizeListener;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
-import scene.Camera;
+import scene.SceneManager;
 import util.Color;
 
 import java.util.Objects;
@@ -37,7 +37,6 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static render.Renderer.enable3D;
-import static render.Renderer.renderSampleCube;
 import static scene.World.setCoordinatePlane;
 import static util.Color.WHITE;
 
@@ -45,7 +44,7 @@ public class Window {
     private int width;
     private int height;
     private long glfwWindowAddress;
-    private final Camera camera;
+    private SceneManager sceneManager;
 
     private static Window INSTANCE = null;
 
@@ -61,18 +60,21 @@ public class Window {
     private Window() {
         this.width = DEFAULT_WIDTH;
         this.height = DEFAULT_HEIGHT;
-        this.camera = new Camera();
     }
 
     public static Window getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Window();
+            INSTANCE.init();
         }
         return INSTANCE;
     }
 
     public void run() {
-        init();
+        if (sceneManager == null) {
+            throw new IllegalStateException("SceneManager is not set!");
+
+        }
         execution();
         terminateGracefully();
     }
@@ -83,6 +85,10 @@ public class Window {
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    public void setSceneManager(SceneManager sceneManager) {
+        this.sceneManager = sceneManager;
     }
 
     private void init() {
@@ -123,11 +129,10 @@ public class Window {
         while (!glfwWindowShouldClose(glfwWindowAddress)) {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glClearColor(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), 0.0f);
-            renderSampleCube();
+            sceneManager.render();
             glfwSwapBuffers(glfwWindowAddress);
             glfwPollEvents();
-            handleActions(camera);
-            camera.update();
+            handleActions(sceneManager);
         }
     }
 

@@ -3,6 +3,7 @@ package glfw;
 import geometry.Vertex;
 import glfw.listener.KeyListener;
 import scene.Camera;
+import scene.SceneManager;
 
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ADD;
@@ -16,7 +17,8 @@ public class Actions {
     private Actions() {
     }
 
-    public static void handleActions(Camera camera) {
+    public static void handleActions(SceneManager sceneManager) {
+        final Camera camera = sceneManager.getCamera();
         if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_UP)) {
             Vertex currPos = camera.getPosition();
             camera.setPosition(new Vertex(currPos.getX(), currPos.getY() + 1, currPos.getZ()));
@@ -41,6 +43,7 @@ public class Actions {
             Vertex currPos = camera.getPosition();
             camera.setPosition(new Vertex(currPos.getX(), currPos.getY(), currPos.getZ() - 1));
         }
+        camera.update();
     }
 
 }
