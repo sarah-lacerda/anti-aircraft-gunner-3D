@@ -13,5 +13,9 @@ public abstract class Entity {
         return position;
     }
 
+    public void setPosition(Vertex position) {
+        this.position = position;
+    }
+
     public abstract void render();
 }

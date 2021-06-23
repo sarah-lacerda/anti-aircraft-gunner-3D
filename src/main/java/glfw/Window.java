@@ -36,9 +36,11 @@ import static org.lwjgl.opengl.GL11.GL_DONT_CARE;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
-import static render.Renderer.enable3D;
+import static render.Renderer.canRender;
 import static scene.World.setCoordinatePlane;
 import static util.Color.WHITE;
+import static util.Time.deltaTimeInSecondsFrom;
+import static util.Time.getCurrentTimeInSeconds;
 
 public class Window {
     private int width;
@@ -118,22 +120,31 @@ public class Window {
 
         setCoordinatePlane();
         setListeners();
-        enable3D();
         // Make the window visible
         glfwShowWindow(glfwWindowAddress);
     }
 
 
     private void execution() {
-        // This is the main loop
+        double time = getCurrentTimeInSeconds();
+        double elapsedTimeSinceLastRendering = 0;
         while (!glfwWindowShouldClose(glfwWindowAddress)) {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glClearColor(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), 0.0f);
-            sceneManager.render();
-            glfwSwapBuffers(glfwWindowAddress);
+            elapsedTimeSinceLastRendering += deltaTimeInSecondsFrom(time);
+            time = getCurrentTimeInSeconds();
+            if (canRender(elapsedTimeSinceLastRendering)) {
+                renderFrame();
+                sceneManager.update();
+            }
             glfwPollEvents();
             handleActions(sceneManager);
         }
+    }
+
+    private void renderFrame() {
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClearColor(BACKGROUND_COLOR.getRed(), BACKGROUND_COLOR.getGreen(), BACKGROUND_COLOR.getBlue(), 0.0f);
+        sceneManager.render();
+        glfwSwapBuffers(glfwWindowAddress);
     }
 
     private long createAndConfigureWindow() {

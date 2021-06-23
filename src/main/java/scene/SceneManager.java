@@ -2,8 +2,12 @@ package scene;
 
 import entity.Building;
 import entity.Entity;
+import entity.Movable;
+import entity.Player;
 import entity.Road;
 import entity.Terrain;
+import geometry.TriangleMesh;
+import geometry.Vector;
 import geometry.Vertex;
 import model.BuildingModel;
 import model.MapEntity;
@@ -14,8 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static geometry.Vector.vector;
 import static geometry.Vertex.vertex;
 import static java.util.Arrays.stream;
+import static java.util.stream.Collectors.toList;
 import static model.MapEntity.BUILDING_RESOURCE_NAME;
 import static model.MapEntity.ROAD_RESOURCE_NAME;
 import static model.MapEntity.TERRAIN_RESOURCE_NAME;
@@ -38,12 +44,62 @@ public class SceneManager {
         this.camera = camera;
     }
 
+    public Player getPlayer() {
+        return (Player) entities
+                .stream()
+                .filter(entity -> entity.getClass() == Player.class)
+                .findFirst().orElseThrow(() -> new IllegalStateException("Player is not instantiated"));
+    }
+
+    public void moveCameraForward() {
+        Vertex cameraPosition = camera.getPosition();
+        Vertex cameraTarget = camera.getTarget();
+        Vector cameraTargetVector = vector(cameraPosition, cameraTarget);
+        Vector cameraTargetVersor = cameraTargetVector.versor();
+        camera.setPosition(vertex(
+                cameraPosition.getX() + cameraTargetVersor.getX(),
+                cameraPosition.getY(),
+                cameraPosition.getZ() + cameraTargetVersor.getZ()
+        ));
+        camera.setTarget(vertex(
+                cameraTarget.getX() + cameraTargetVersor.getX(),
+                cameraTarget.getY(),
+                cameraTarget.getZ() + cameraTargetVersor.getZ()
+        ));
+    }
+
+    public void movePlayerForward() {
+        getPlayer().beginMoveForward();
+    }
+
+    public void movePlayerLeft() {
+        getPlayer().moveLeft();
+    }
+
+    public void movePlayerRight() {
+        getPlayer().moveRight();
+    }
+
+    public Camera getCamera() {
+        return camera;
+    }
+
+    public void render() {
+        entities.forEach(Entity::render);
+    }
+
+    public void update() {
+        getMovableEntities().forEach(Movable::update);
+    }
+
     private void initializeStaticEntities(MapStructure mapStructure, BuildingModel[] buildingModels) {
         MapEntity terrain = mapStructure.getMapEntityBy(TERRAIN_RESOURCE_NAME);
         MapEntity road = mapStructure.getMapEntityBy(ROAD_RESOURCE_NAME);
         MapEntity building = mapStructure.getMapEntityBy(BUILDING_RESOURCE_NAME);
 
         initializeTexturesFor(buildingModels, terrain, road);
+
+        createPlayer();
 
         int[] description = mapStructure.getDescription();
         for (int i = 0, descriptionLength = description.length; i < descriptionLength; i++) {
@@ -80,11 +136,15 @@ public class SceneManager {
                 randomBuildingModel.getHeight());
     }
 
-    public void render() {
-        entities.forEach(Entity::render);
+    private void createPlayer() {
+        entities.add(new Player(vertex(0, 1, 0), TriangleMesh.loadFromTRI("car2.tri")));
     }
 
-    public Camera getCamera() {
-        return camera;
+    private List<Movable> getMovableEntities() {
+        return entities
+                .stream()
+                .filter(entity -> entity instanceof Movable)
+                .map(Movable.class::cast)
+                .collect(toList());
     }
 }
