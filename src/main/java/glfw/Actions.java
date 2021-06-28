@@ -8,11 +8,13 @@ import scene.SceneManager;
 import static glfw.Commands.MOVE_PLAYER_FORWARD;
 import static glfw.Commands.MOVE_PLAYER_LEFT;
 import static glfw.Commands.MOVE_PLAYER_RIGHT;
+import static glfw.Commands.SWITCH_CAMERA_VIEW;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ADD;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_SUBTRACT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 
 public class Actions {
@@ -31,6 +33,9 @@ public class Actions {
         }
         if (KeyListener.getInstance().isKeyPressed(MOVE_PLAYER_RIGHT.glfwKey)) {
             sceneManager.movePlayerRight();
+        }
+        if (KeyListener.getInstance().isKeyPressed(SWITCH_CAMERA_VIEW.glfwKey)) {
+            sceneManager.toggleCameraView();
         }
 
         // ################ TEMP DEBUG KEYS #########################
@@ -58,7 +63,6 @@ public class Actions {
             Vertex currPos = camera.getPosition();
             camera.setPosition(new Vertex(currPos.getX(), currPos.getY(), currPos.getZ() - 1));
         }
-        camera.update();
     }
 
 }

@@ -46,10 +46,11 @@ public class Renderer {
     public static void renderFrom(TriangleMesh triangleMesh,
                                   Vertex atPosition,
                                   Color withColor,
+                                  Vertex scalePosition,
                                   float scaleFactor,
                                   float rotationAngle) {
         glPushMatrix();
-        glScalef(scaleFactor, scaleFactor, scaleFactor);
+        scale(scalePosition, scaleFactor);
         glTranslatef(atPosition.getX(), atPosition.getY(), atPosition.getZ());
         glRotatef(rotationAngle, 0, 1, 0);
         glBegin(GL_TRIANGLES);
@@ -154,6 +155,14 @@ public class Renderer {
         glEnd();
         glPopMatrix();
         Texture.unbind();
+    }
+
+    private static void scale(Vertex atPosition, float scaleFactor) {
+        if (atPosition != null) {
+            glTranslatef(atPosition.getX(), atPosition.getY(), atPosition.getZ());
+            glScalef(scaleFactor, scaleFactor, scaleFactor);
+            glTranslatef(-atPosition.getX(), -atPosition.getY(), -atPosition.getZ());
+        }
     }
 
     private static void setColor(Color color) {

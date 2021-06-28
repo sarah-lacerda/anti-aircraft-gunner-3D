@@ -14,8 +14,4 @@ public class World {
     public static final int WORLD_DEPTH = Math.abs(Z_LOWER_BOUND) + Math.abs(Z_UPPER_BOUND);
 
     private World() {}
-
-    public static void setCoordinatePlane() {
-        glOrtho(X_LOWER_BOUND, X_UPPER_BOUND, Y_LOWER_BOUND, Y_UPPER_BOUND, Z_LOWER_BOUND, Z_UPPER_BOUND);
-    }
 }

@@ -37,7 +37,6 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static render.Renderer.canRender;
-import static scene.World.setCoordinatePlane;
 import static util.Color.WHITE;
 import static util.Time.deltaTimeInSecondsFrom;
 import static util.Time.getCurrentTimeInSeconds;
@@ -118,7 +117,6 @@ public class Window {
         // bindings available for use.
         GL.createCapabilities();
 
-        setCoordinatePlane();
         setListeners();
         // Make the window visible
         glfwShowWindow(glfwWindowAddress);

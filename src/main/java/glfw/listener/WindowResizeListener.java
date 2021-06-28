@@ -9,7 +9,6 @@ import static org.lwjgl.opengl.GL11.GL_PROJECTION;
 import static org.lwjgl.opengl.GL11.glLoadIdentity;
 import static org.lwjgl.opengl.GL11.glMatrixMode;
 import static org.lwjgl.opengl.GL11.glViewport;
-import static scene.World.setCoordinatePlane;
 
 public class WindowResizeListener implements GLFWWindowSizeCallbackI {
     private static WindowResizeListener INSTANCE;
@@ -36,7 +35,6 @@ public class WindowResizeListener implements GLFWWindowSizeCallbackI {
         glLoadIdentity();
 
         glViewport(0, 0, width, height);
-        setCoordinatePlane();
         glfwSetWindowAspectRatio(window, width, height);
 
         glMatrixMode(GL_MODELVIEW);

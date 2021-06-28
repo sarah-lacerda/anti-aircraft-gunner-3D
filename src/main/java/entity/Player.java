@@ -19,7 +19,9 @@ public class Player extends Movable {
     private boolean movingForward;
     private float movementAngle = 0;
 
-    private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * 5;
+    public final static float SPEED = 1f / 20f;
+    private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * SPEED;
+    public static final String PLAYER_MODEL_FILEPATH = "car2.tri";
 
     public Player(Vertex position, TriangleMesh model) {
         super(position);
@@ -31,7 +33,6 @@ public class Player extends Movable {
     public void moveLeft() {
         movementAngle += 0.5f;
     }
-
 
     public void moveRight() {
         movementAngle -= 0.5f;
@@ -56,6 +57,19 @@ public class Player extends Movable {
                         (float) sin(toRadians(movementAngle - 270)) *
                                 UNIT_OF_MOVEMENT_PER_FRAME
         ));
+
+    }
+
+    public Vertex getFirstPersonCameraPosition() {
+        return vertex(getPosition().getX(), getPosition().getY() + 2.0f, getPosition().getZ());
+    }
+
+    public Vertex getFirstPersonCameraTarget() {
+        return vertex(
+                getPosition().getX() + (float) cos(toRadians(movementAngle - 270)) * 5,
+                getPosition().getY() + 2f,
+                getPosition().getZ() - (float) sin(toRadians(movementAngle - 270)) * 5
+        );
     }
 
     @Override
@@ -67,8 +81,9 @@ public class Player extends Movable {
 
     public void render() {
         renderFrom(model,
-                vertex(getPosition().getX(), getPosition().getY() + 200f, getPosition().getZ()),
+                vertex(getPosition().getX(), getPosition().getY() + 100, getPosition().getZ()),
                 color,
+                getPosition(),
                 .01f,
                 movementAngle
         );

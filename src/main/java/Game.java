@@ -3,6 +3,7 @@ import scene.Camera;
 import scene.SceneManager;
 
 import static de.damios.guacamole.gdx.StartOnFirstThreadHelper.startNewJvmIfRequired;
+import static entity.Player.PLAYER_MODEL_FILEPATH;
 import static model.BuildingModel.BUILDINGS_FILEPATH;
 import static model.MapStructure.MAP_STRUCTURE_FILEPATH;
 import static render.Renderer.enable3D;
@@ -20,7 +21,12 @@ public class Game {
         }
         enable3D();
         enableTextures();
-        SceneManager sceneManager = new SceneManager(new Camera(), MAP_STRUCTURE_FILEPATH, BUILDINGS_FILEPATH);
+        SceneManager sceneManager = new SceneManager(
+                new Camera(),
+                MAP_STRUCTURE_FILEPATH,
+                BUILDINGS_FILEPATH,
+                PLAYER_MODEL_FILEPATH
+        );
         WINDOW.setSceneManager(sceneManager);
         WINDOW.run();
     }
