@@ -38,11 +38,11 @@ public class Player extends Movable {
     }
 
     public void moveLeft() {
-        movementAngle += 0.5f;
+        movementAngle += 1.0f;
     }
 
     public void moveRight() {
-        movementAngle -= 0.5f;
+        movementAngle -= 1.0f;
     }
 
     public void beginMoveForward() {
