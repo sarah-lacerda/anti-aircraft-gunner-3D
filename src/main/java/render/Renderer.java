@@ -1,10 +1,12 @@
 package render;
 
 
-import geometry.Triangle;
 import geometry.TriangleMesh;
 import geometry.Vertex;
+import render.transformation.Transformation;
 import util.Color;
+
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
@@ -20,7 +22,6 @@ import static org.lwjgl.opengl.GL11.glEnd;
 import static org.lwjgl.opengl.GL11.glPolygonMode;
 import static org.lwjgl.opengl.GL11.glPopMatrix;
 import static org.lwjgl.opengl.GL11.glPushMatrix;
-import static org.lwjgl.opengl.GL11.glRotatef;
 import static org.lwjgl.opengl.GL11.glScalef;
 import static org.lwjgl.opengl.GL11.glTexCoord2f;
 import static org.lwjgl.opengl.GL11.glTranslatef;
@@ -31,7 +32,8 @@ public class Renderer {
 
     public static final int FRAMES_PER_SECOND = 30;
 
-    private Renderer() {}
+    private Renderer() {
+    }
 
     public static void enable3D() {
         glEnable(GL_DEPTH_TEST);
@@ -44,26 +46,20 @@ public class Renderer {
     }
 
     public static void renderFrom(TriangleMesh triangleMesh,
-                                  Vertex atPosition,
                                   Color withColor,
-                                  Vertex scalePosition,
-                                  float scaleFactor,
-                                  float rotationAngle) {
+                                  List<Transformation> transformations) {
         glPushMatrix();
-        scale(scalePosition, scaleFactor);
-        glTranslatef(atPosition.getX(), atPosition.getY(), atPosition.getZ());
-        glRotatef(rotationAngle, 0, 1, 0);
+        transformations.forEach(Transformation::apply);
         glBegin(GL_TRIANGLES);
         glColor3f(withColor.getRed(), withColor.getGreen(), withColor.getBlue());
-        for (Triangle triangle : triangleMesh.getTriangles()) {
+        triangleMesh.getTriangles().forEach(triangle -> {
             Vertex a = triangle.getA();
             Vertex b = triangle.getB();
             Vertex c = triangle.getC();
-
             glVertex3f(a.getX(), a.getY(), a.getZ());
             glVertex3f(b.getX(), b.getY(), b.getZ());
             glVertex3f(c.getX(), c.getY(), c.getZ());
-        }
+        });
         glEnd();
         glPopMatrix();
     }
@@ -96,7 +92,7 @@ public class Renderer {
         glPushMatrix();
         setColor(WHITE);
         glScalef(xSize, ySize, zSize);
-        glTranslatef(atPosition.getX(),atPosition.getY(),atPosition.getZ());
+        glTranslatef(atPosition.getX(), atPosition.getY(), atPosition.getZ());
         glEnable(GL_TEXTURE_2D);
         texture.bind();
 
@@ -147,14 +143,6 @@ public class Renderer {
         glEnd();
         glPopMatrix();
         Texture.unbind();
-    }
-
-    private static void scale(Vertex atPosition, float scaleFactor) {
-        if (atPosition != null) {
-            glTranslatef(atPosition.getX(), atPosition.getY(), atPosition.getZ());
-            glScalef(scaleFactor, scaleFactor, scaleFactor);
-            glTranslatef(-atPosition.getX(), -atPosition.getY(), -atPosition.getZ());
-        }
     }
 
     private static void setColor(Color color) {

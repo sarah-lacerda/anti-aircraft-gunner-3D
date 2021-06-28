@@ -2,6 +2,7 @@ package scene;
 
 import entity.Building;
 import entity.Entity;
+import entity.Gas;
 import entity.Movable;
 import entity.Player;
 import entity.Road;
@@ -12,11 +13,13 @@ import model.BuildingModel;
 import model.MapEntity;
 import model.MapStructure;
 import render.TextureManager;
+import util.Color;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static entity.Gas.TOTAL_AMOUNT_OF_GAS_CONTAINERS;
 import static geometry.Vertex.vertex;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -28,6 +31,7 @@ import static scene.World.WORLD_WIDTH;
 import static scene.World.X_LOWER_BOUND;
 import static scene.World.Z_LOWER_BOUND;
 import static util.FileUtils.deserializeFrom;
+import static util.Randomizer.randomIntWithinRange;
 import static util.Time.deltaTimeInSecondsFrom;
 import static util.Time.getCurrentTimeInSeconds;
 
@@ -40,13 +44,14 @@ public class SceneManager {
     private static final double CAMERA_VIEW_TOGGLE_COOLDOWN_IN_SECONDS = .25;
 
     public SceneManager(Camera camera,
-                        String mapStructureFilePath,
-                        String buildingsFilePath,
-                        String playerModelFilepath) {
+                        String mapStructureFilepath,
+                        String buildingsFilepath,
+                        String playerModelFilepath,
+                        String gasModelFilepath) {
         entities = new ArrayList<>();
-        MapStructure mapStructure = deserializeFrom(mapStructureFilePath, MapStructure.class);
-        BuildingModel[] buildingModels = deserializeFrom(buildingsFilePath, BuildingModel[].class);
-        initializeStaticEntities(mapStructure, buildingModels, playerModelFilepath);
+        MapStructure mapStructure = deserializeFrom(mapStructureFilepath, MapStructure.class);
+        BuildingModel[] buildingModels = deserializeFrom(buildingsFilepath, BuildingModel[].class);
+        initializeStaticEntities(mapStructure, buildingModels, playerModelFilepath, gasModelFilepath);
         this.camera = camera;
         this.lastTimeCameraViewWasToggled = getCurrentTimeInSeconds();
     }
@@ -106,7 +111,8 @@ public class SceneManager {
 
     private void initializeStaticEntities(MapStructure mapStructure,
                                           BuildingModel[] buildingModels,
-                                          String playerModelFilepath) {
+                                          String playerModelFilepath,
+                                          String gasModelFilepath) {
         MapEntity terrain = mapStructure.getMapEntityBy(TERRAIN_RESOURCE_NAME);
         MapEntity road = mapStructure.getMapEntityBy(ROAD_RESOURCE_NAME);
         MapEntity building = mapStructure.getMapEntityBy(BUILDING_RESOURCE_NAME);
@@ -115,6 +121,16 @@ public class SceneManager {
 
         createPlayer(playerModelFilepath);
 
+        createMapAndBuildings(mapStructure, buildingModels, terrain, road, building);
+
+        spawnGasContainersAtRandomPlaces(gasModelFilepath);
+    }
+
+    private void createMapAndBuildings(MapStructure mapStructure,
+                                       BuildingModel[] buildingModels,
+                                       MapEntity terrain,
+                                       MapEntity road,
+                                       MapEntity building) {
         int[] description = mapStructure.getDescription();
         for (int i = 0, descriptionLength = description.length; i < descriptionLength; i++) {
             int cell = description[i];
@@ -150,8 +166,30 @@ public class SceneManager {
                 randomBuildingModel.getHeight());
     }
 
+    private void spawnGasContainersAtRandomPlaces(String gasModelFilepath) {
+        TriangleMesh modelMesh = TriangleMesh.loadFromTRI(gasModelFilepath);
+        for (int i = 0; i < TOTAL_AMOUNT_OF_GAS_CONTAINERS; i++) {
+            Road randomRoadTitle = randomRoadTile();
+            entities.add(
+                    new Gas(
+                            vertex(randomRoadTitle.getPosition().getX(), 1.5f, randomRoadTitle.getPosition().getZ()),
+                            modelMesh,
+                            Color.FIREBRICK
+                    )
+            );
+        }
+    }
+
+    private Road randomRoadTile() {
+        Entity entity;
+        do {
+            entity = entities.get(randomIntWithinRange(0, entities.size()));
+        } while (entity.getClass() != Road.class);
+        return (Road) entity;
+    }
+
     private void createPlayer(String modelFilepath) {
-        entities.add(new Player(vertex(0, 1, 0), TriangleMesh.loadFromTRI(modelFilepath)));
+        entities.add(new Player(vertex(0, 1, 0), TriangleMesh.loadFromTRI(modelFilepath), Color.TEAL));
     }
 
     private List<Movable> getMovableEntities() {

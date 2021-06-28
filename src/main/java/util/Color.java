@@ -15,6 +15,8 @@ public enum Color {
     SILVER(0.753f, 0.753f, 0.753f),
     GRAY(0.502f, 0.502f, 0.502f),
     MAROON(0.502f, 0.000f, 0.000f),
+    FIREBRICK(0.698f, 0.133f, 0.133f),
+    CRIMSON(0.863f, 0.078f, 0.235f),
     OLIVE(0.502f, 0.502f, 0.000f),
     GREEN(0.000f, 0.502f, 0.000f),
     PURPLE(0.502f, 0.000f, 0.502f),

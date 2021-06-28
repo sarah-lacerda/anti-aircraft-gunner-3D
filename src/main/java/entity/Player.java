@@ -2,14 +2,21 @@ package entity;
 
 import geometry.TriangleMesh;
 import geometry.Vertex;
+import render.transformation.Transformation;
 import util.Color;
+
+import java.util.List;
 
 import static geometry.Vertex.vertex;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
+import static java.util.List.of;
 import static render.Renderer.FRAMES_PER_SECOND;
 import static render.Renderer.renderFrom;
+import static render.transformation.Transformation.rotate;
+import static render.transformation.Transformation.scale;
+import static render.transformation.Transformation.translate;
 import static scene.World.WORLD_WIDTH;
 
 public class Player extends Movable {
@@ -23,10 +30,10 @@ public class Player extends Movable {
     private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * SPEED;
     public static final String PLAYER_MODEL_FILEPATH = "car2.tri";
 
-    public Player(Vertex position, TriangleMesh model) {
+    public Player(Vertex position, TriangleMesh model, Color color) {
         super(position);
         this.model = model;
-        this.color = Color.TEAL;
+        this.color = color;
         this.movingForward = false;
     }
 
@@ -80,12 +87,12 @@ public class Player extends Movable {
     }
 
     public void render() {
-        renderFrom(model,
-                vertex(getPosition().getX(), getPosition().getY() + 100, getPosition().getZ()),
-                color,
-                getPosition(),
-                .01f,
-                movementAngle
+        List<Transformation> transformations = of(
+                scale(getPosition(), .01f, .01f, .01f),
+                translate(vertex(getPosition().getX(), getPosition().getY() + 100, getPosition().getZ())),
+                rotate(vertex(0, 1, 0), movementAngle)
         );
+
+        renderFrom(model, color, transformations);
     }
 }
