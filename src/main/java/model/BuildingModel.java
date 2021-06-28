@@ -4,7 +4,7 @@ public class BuildingModel {
     private String textureResource;
     private int height;
 
-    public static final String BUILDINGS_FILEPATH = "buildings.json";
+    public static final String BUILDINGS_FILEPATH = "model/buildings.json";
 
     public String getTextureResource() {
         return textureResource;

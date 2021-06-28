@@ -1,0 +1,14 @@
+[
+  {
+    "textureResource": "texture/building1.png",
+    "height": 10
+  },
+  {
+    "textureResource": "texture/building2.png",
+    "height": 8
+  },
+  {
+    "textureResource": "texture/building3.png",
+    "height": 5
+  }
+]

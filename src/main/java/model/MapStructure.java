@@ -9,7 +9,7 @@ public class MapStructure {
     private int[] description;
     private List<MapEntity> mapEntities;
 
-    public static final String MAP_STRUCTURE_FILEPATH = "testMap.json";
+    public static final String MAP_STRUCTURE_FILEPATH = "model/map.json";
 
     public long getHeight() {
         return height;

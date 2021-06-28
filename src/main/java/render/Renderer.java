@@ -102,23 +102,15 @@ public class Renderer {
 
         glBegin(GL_QUADS);
         // Front Face
-        glTexCoord2f(0, 1);
         glVertex3f(-1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 1);
         glVertex3f(1.0f, -1.0f, 1.0f);
-        glTexCoord2f(1, 0);
         glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(0, 0);
         glVertex3f(-1.0f, 1.0f, 1.0f);
 
         // Back Face
-        glTexCoord2f(0, 1);
         glVertex3f(-1.0f, -1.0f, -1.0f);
-        glTexCoord2f(1, 1);
         glVertex3f(-1.0f, 1.0f, -1.0f);
-        glTexCoord2f(1, 0);
         glVertex3f(1.0f, 1.0f, -1.0f);
-        glTexCoord2f(0, 0);
         glVertex3f(1.0f, -1.0f, -1.0f);
 
         // Top Face
@@ -136,11 +128,11 @@ public class Renderer {
         // Right face
         glTexCoord2f(0, 1);
         glVertex3f(1.0f, -1.0f, -1.0f);
-        glTexCoord2f(1, 1);
+        glTexCoord2f(0, 0);
         glVertex3f(1.0f, 1.0f, -1.0f);
         glTexCoord2f(1, 0);
         glVertex3f(1.0f, 1.0f, 1.0f);
-        glTexCoord2f(0, 0);
+        glTexCoord2f(1, 1);
         glVertex3f(1.0f, -1.0f, 1.0f);
 
         // Left Face
