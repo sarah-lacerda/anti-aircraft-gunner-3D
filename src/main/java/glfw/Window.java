@@ -37,7 +37,7 @@ import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 import static org.lwjgl.system.MemoryUtil.NULL;
 import static render.Renderer.canRender;
-import static util.Color.WHITE;
+import static util.Color.LIGHT_CYAN;
 import static util.Time.deltaTimeInSecondsFrom;
 import static util.Time.getCurrentTimeInSeconds;
 
@@ -56,7 +56,7 @@ public class Window {
     private static final int MAX_WIDTH = GL_DONT_CARE;
     private static final int MAX_HEIGHT = GL_DONT_CARE;
     private static final String TITLE = "Anti-aircraft Gunner 3D";
-    private static final Color BACKGROUND_COLOR = WHITE;
+    private static final Color BACKGROUND_COLOR = LIGHT_CYAN;
 
     private Window() {
         this.width = DEFAULT_WIDTH;
