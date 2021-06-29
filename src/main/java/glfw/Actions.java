@@ -7,6 +7,8 @@ import scene.SceneManager;
 
 import static geometry.Collision.handleCollisions;
 import static geometry.Collision.isPlayerOver;
+import static glfw.Commands.MOVE_CAMERA_DOWN;
+import static glfw.Commands.MOVE_CAMERA_UP;
 import static glfw.Commands.MOVE_PLAYER_FORWARD;
 import static glfw.Commands.MOVE_PLAYER_LEFT;
 import static glfw.Commands.MOVE_PLAYER_RIGHT;
@@ -31,6 +33,16 @@ public class Actions {
         }
         if (KeyListener.getInstance().isKeyPressed(SWITCH_CAMERA_VIEW.glfwKey)) {
             sceneManager.toggleCameraView();
+        }
+        if (KeyListener.getInstance().isKeyPressed(MOVE_CAMERA_UP.glfwKey)) {
+            if (sceneManager.getCamera().isPerspectiveViewEnabled()) {
+                sceneManager.getPlayer().cameraLookUp();
+            }
+        }
+        if (KeyListener.getInstance().isKeyPressed(MOVE_CAMERA_DOWN.glfwKey)) {
+            if (sceneManager.getCamera().isPerspectiveViewEnabled()) {
+                sceneManager.getPlayer().cameraLookDown();
+            }
         }
 
         haltPlayerIfGoingOverTerrain(sceneManager);

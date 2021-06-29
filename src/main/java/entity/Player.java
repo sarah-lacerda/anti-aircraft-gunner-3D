@@ -31,6 +31,7 @@ public class Player extends Movable {
     private final HitBox hitBox;
     private boolean movingForward;
     private float movementAngle = 0;
+    private float cameraUpDownPosition = 0;
 
     private final static float SPEED = 1f / 20f;
     private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * SPEED;
@@ -106,9 +107,17 @@ public class Player extends Movable {
     public Vertex getFirstPersonCameraTarget() {
         return vertex(
                 getPosition().getX() + (float) cos(toRadians(movementAngle - 270)) * 5,
-                getPosition().getY() + 2f,
+                getPosition().getY() + 2f + cameraUpDownPosition,
                 getPosition().getZ() - (float) sin(toRadians(movementAngle - 270)) * 5
         );
+    }
+
+    public void cameraLookUp() {
+        cameraUpDownPosition = Math.min(5, cameraUpDownPosition += .1f);
+    }
+
+    public void cameraLookDown() {
+        cameraUpDownPosition = Math.max(-1f, cameraUpDownPosition -= .1f);
     }
 
     @Override
