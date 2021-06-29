@@ -20,7 +20,7 @@ public class Enemy extends Movable {
     private final HitBox hitBox;
     private final EnemyTrajectory enemyTrajectory;
 
-    public static final String ENEMY_MODEL_FILEPATH = "duck.tri";
+    public static final String ENEMY_MODEL_FILEPATH = "model/duck.tri";
     public static final int TOTAL_ENEMIES = 3;
 
     public Enemy(TriangleMesh model, Color color, int trajectoryId) {
