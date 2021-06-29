@@ -27,6 +27,7 @@ public class Collision {
                     if (entity1.getClass() == Player.class) {
                         if (entity2.getClass() == Gas.class) {
                             sceneManager.removeEntity(entity2);
+                            ((Player) entity1).increaseFuel(20);
                         }
                     }
                 }

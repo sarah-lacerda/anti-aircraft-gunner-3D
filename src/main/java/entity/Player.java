@@ -32,6 +32,7 @@ public class Player extends Movable {
     private boolean movingForward;
     private float movementAngle = 0;
     private float cameraUpDownPosition = 0;
+    private float fuel;
 
     private final static float SPEED = 1f / 20f;
     private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * SPEED;
@@ -44,6 +45,7 @@ public class Player extends Movable {
         this.color = color;
         this.movingForward = false;
         hitBox = new HitBox(2f, 1f, 2f);
+        fuel = 100f;
     }
 
     @Override
@@ -86,18 +88,21 @@ public class Player extends Movable {
     }
 
     private void moveForward() {
-        movingForward = true;
-        setPosition(vertex(
-                getPosition().getX() +
-                        (float) cos(toRadians(movementAngle - 270)) *
-                                UNIT_OF_MOVEMENT_PER_FRAME
-                ,
-                getPosition().getY()
-                ,
-                getPosition().getZ() -
-                        (float) sin(toRadians(movementAngle - 270)) *
-                                UNIT_OF_MOVEMENT_PER_FRAME
-        ));
+        if (fuel > 0) {
+            movingForward = true;
+            setPosition(vertex(
+                    getPosition().getX() +
+                            (float) cos(toRadians(movementAngle - 270)) *
+                                    UNIT_OF_MOVEMENT_PER_FRAME
+                    ,
+                    getPosition().getY()
+                    ,
+                    getPosition().getZ() -
+                            (float) sin(toRadians(movementAngle - 270)) *
+                                    UNIT_OF_MOVEMENT_PER_FRAME
+            ));
+            fuel -= .01;
+        }
     }
 
     public Vertex getFirstPersonCameraPosition() {
@@ -118,6 +123,10 @@ public class Player extends Movable {
 
     public void cameraLookDown() {
         cameraUpDownPosition = Math.max(-1f, cameraUpDownPosition -= .1f);
+    }
+
+    public void increaseFuel(int quantity) {
+        fuel += quantity;
     }
 
     @Override
