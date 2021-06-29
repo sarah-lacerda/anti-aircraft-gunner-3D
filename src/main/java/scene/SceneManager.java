@@ -7,6 +7,7 @@ import entity.Movable;
 import entity.Player;
 import entity.Road;
 import entity.Terrain;
+import entity.enemy.Enemy;
 import geometry.TriangleMesh;
 import geometry.Vertex;
 import model.BuildingModel;
@@ -21,6 +22,7 @@ import java.util.Random;
 
 import static entity.Gas.TOTAL_AMOUNT_OF_GAS_CONTAINERS;
 import static entity.Player.PLAYER_SPAWN_POSITION;
+import static entity.enemy.Enemy.TOTAL_ENEMIES;
 import static geometry.Vertex.vertex;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
@@ -32,6 +34,10 @@ import static render.TextureManager.getTexture;
 import static scene.World.WORLD_WIDTH;
 import static scene.World.X_LOWER_BOUND;
 import static scene.World.Z_LOWER_BOUND;
+import static util.Color.DARK_GREEN;
+import static util.Color.FIREBRICK;
+import static util.Color.SADDLE_BROWN;
+import static util.Color.TEAL;
 import static util.FileUtils.deserializeFrom;
 import static util.Randomizer.randomIntWithinRange;
 import static util.Time.deltaTimeInSecondsFrom;
@@ -49,11 +55,12 @@ public class SceneManager {
                         String mapStructureFilepath,
                         String buildingsFilepath,
                         String playerModelFilepath,
-                        String gasModelFilepath) {
+                        String gasModelFilepath,
+                        String enemyModelFilepath) {
         entities = new ArrayList<>();
         MapStructure mapStructure = deserializeFrom(mapStructureFilepath, MapStructure.class);
         BuildingModel[] buildingModels = deserializeFrom(buildingsFilepath, BuildingModel[].class);
-        initializeStaticEntities(mapStructure, buildingModels, playerModelFilepath, gasModelFilepath);
+        initializeEntities(mapStructure, buildingModels, playerModelFilepath, gasModelFilepath, enemyModelFilepath);
         this.camera = camera;
         this.lastTimeCameraViewWasToggled = getCurrentTimeInSeconds();
     }
@@ -127,28 +134,34 @@ public class SceneManager {
         }
     }
 
-    private void initializeStaticEntities(MapStructure mapStructure,
-                                          BuildingModel[] buildingModels,
-                                          String playerModelFilepath,
-                                          String gasModelFilepath) {
+    private void initializeEntities(MapStructure mapStructure,
+                                    BuildingModel[] buildingModels,
+                                    String playerModelFilepath,
+                                    String gasModelFilepath,
+                                    String enemyModelFilepath) {
         MapEntity terrain = mapStructure.getMapEntityBy(TERRAIN_RESOURCE_NAME);
         MapEntity road = mapStructure.getMapEntityBy(ROAD_RESOURCE_NAME);
         MapEntity building = mapStructure.getMapEntityBy(BUILDING_RESOURCE_NAME);
 
         initializeTexturesFor(buildingModels, terrain, road);
-
         createPlayer(playerModelFilepath);
-
-        createMapAndBuildings(mapStructure, buildingModels, terrain, road, building);
-
+        initializeStaticStructures(mapStructure, buildingModels, terrain, road, building);
         spawnGasContainersAtRandomPlaces(gasModelFilepath);
+        spawnEnemies(enemyModelFilepath);
     }
 
-    private void createMapAndBuildings(MapStructure mapStructure,
-                                       BuildingModel[] buildingModels,
-                                       MapEntity terrain,
-                                       MapEntity road,
-                                       MapEntity building) {
+    private void spawnEnemies(String enemyModelFilepath) {
+        List<Color> colors = List.of(SADDLE_BROWN, DARK_GREEN);
+        range(0, TOTAL_ENEMIES)
+                .mapToObj(i -> new Enemy(TriangleMesh.loadFromTRI(enemyModelFilepath), colors.get(i % colors.size()), i))
+                .forEach(entities::add);
+    }
+
+    private void initializeStaticStructures(MapStructure mapStructure,
+                                            BuildingModel[] buildingModels,
+                                            MapEntity terrain,
+                                            MapEntity road,
+                                            MapEntity building) {
         int[] description = mapStructure.getDescription();
         for (int i = 0, descriptionLength = description.length; i < descriptionLength; i++) {
             int cell = description[i];
@@ -190,7 +203,7 @@ public class SceneManager {
                 .mapToObj(i -> randomRoadTile()).map(randomRoadTitle -> new Gas(
                 vertex(randomRoadTitle.getPosition().getX(), 1.5f, randomRoadTitle.getPosition().getZ()),
                 modelMesh,
-                Color.FIREBRICK
+                FIREBRICK
         )).forEach(entities::add);
     }
 
@@ -203,6 +216,6 @@ public class SceneManager {
     }
 
     private void createPlayer(String modelFilepath) {
-        entities.add(new Player(PLAYER_SPAWN_POSITION, TriangleMesh.loadFromTRI(modelFilepath), Color.TEAL));
+        entities.add(new Player(PLAYER_SPAWN_POSITION, TriangleMesh.loadFromTRI(modelFilepath), TEAL));
     }
 }

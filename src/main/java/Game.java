@@ -3,6 +3,7 @@ import scene.Camera;
 import scene.SceneManager;
 
 import static de.damios.guacamole.gdx.StartOnFirstThreadHelper.startNewJvmIfRequired;
+import static entity.enemy.Enemy.ENEMY_MODEL_FILEPATH;
 import static entity.Gas.GAS_MODEL_FILEPATH;
 import static entity.Player.PLAYER_MODEL_FILEPATH;
 import static model.BuildingModel.BUILDINGS_FILEPATH;
@@ -27,7 +28,8 @@ public class Game {
                 MAP_STRUCTURE_FILEPATH,
                 BUILDINGS_FILEPATH,
                 PLAYER_MODEL_FILEPATH,
-                GAS_MODEL_FILEPATH
+                GAS_MODEL_FILEPATH,
+                ENEMY_MODEL_FILEPATH
         );
         WINDOW.setSceneManager(sceneManager);
         WINDOW.run();
