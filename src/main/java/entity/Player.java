@@ -11,30 +11,34 @@ import static geometry.Vertex.vertex;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.toRadians;
-import static java.util.List.of;
 import static render.Renderer.FRAMES_PER_SECOND;
+import static render.Renderer.renderDebug;
 import static render.Renderer.renderFrom;
 import static render.transformation.Transformation.rotate;
 import static render.transformation.Transformation.scale;
 import static render.transformation.Transformation.translate;
 import static scene.World.WORLD_WIDTH;
+import static util.Debug.DEBUG_ENABLED;
 
 public class Player extends Movable {
 
     private final TriangleMesh model;
     private final Color color;
+    private final HitBox hitBox;
     private boolean movingForward;
     private float movementAngle = 0;
 
-    public final static float SPEED = 1f / 20f;
+    private final static float SPEED = 1f / 20f;
     private static final float UNIT_OF_MOVEMENT_PER_FRAME = (WORLD_WIDTH / (float) FRAMES_PER_SECOND) * SPEED;
     public static final String PLAYER_MODEL_FILEPATH = "car2.tri";
+    public static final Vertex PLAYER_SPAWN_POSITION = vertex(-42.0f, 1.0f, 45.0f);
 
     public Player(Vertex position, TriangleMesh model, Color color) {
         super(position);
         this.model = model;
         this.color = color;
         this.movingForward = false;
+        hitBox = new HitBox(2f, 1f, 2f);
     }
 
     public void moveLeft() {
@@ -45,10 +49,28 @@ public class Player extends Movable {
         movementAngle -= 1.0f;
     }
 
+    public void setMovingForward(boolean movingForward) {
+        this.movingForward = movingForward;
+    }
+
     public void beginMoveForward() {
         if (!movingForward) {
             moveForward();
         }
+    }
+
+    public void moveBackwards() {
+        setPosition(vertex(
+                getPosition().getX() -
+                        (float) cos(toRadians(movementAngle - 270)) *
+                                UNIT_OF_MOVEMENT_PER_FRAME,
+                getPosition().getY()
+                ,
+                getPosition().getZ() +
+                        (float) sin(toRadians(movementAngle - 270)) *
+                                UNIT_OF_MOVEMENT_PER_FRAME
+                )
+        );
     }
 
     private void moveForward() {
@@ -64,7 +86,6 @@ public class Player extends Movable {
                         (float) sin(toRadians(movementAngle - 270)) *
                                 UNIT_OF_MOVEMENT_PER_FRAME
         ));
-
     }
 
     public Vertex getFirstPersonCameraPosition() {
@@ -86,13 +107,26 @@ public class Player extends Movable {
         }
     }
 
+    @Override
+    public HitBox getHitBox() {
+        return hitBox;
+    }
+
     public void render() {
-        List<Transformation> transformations = of(
+        List<Transformation> transformations = List.of(
                 scale(getPosition(), .01f, .01f, .01f),
                 translate(vertex(getPosition().getX(), getPosition().getY() + 100, getPosition().getZ())),
                 rotate(vertex(0, 1, 0), movementAngle)
         );
 
         renderFrom(model, color, transformations);
+
+        if (DEBUG_ENABLED) {
+            List<Transformation> hitBoxTransformations = List.of(
+                    translate(vertex(getPosition().getX(), getPosition().getY(), getPosition().getZ())),
+                    rotate(vertex(0, 1, 0), movementAngle)
+            );
+            renderDebug(hitBox, hitBoxTransformations);
+        }
     }
 }

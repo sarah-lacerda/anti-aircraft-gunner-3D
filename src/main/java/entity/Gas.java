@@ -8,15 +8,18 @@ import util.Color;
 import java.util.List;
 
 import static geometry.Vertex.vertex;
+import static render.Renderer.renderDebug;
 import static render.Renderer.renderFrom;
 import static render.transformation.Transformation.rotate;
 import static render.transformation.Transformation.scale;
 import static render.transformation.Transformation.translate;
+import static util.Debug.DEBUG_ENABLED;
 
 public class Gas extends Entity {
 
     private final TriangleMesh model;
     private final Color color;
+    private final HitBox hitBox;
     private float rotationAngle;
 
     public static final int TOTAL_AMOUNT_OF_GAS_CONTAINERS = 10;
@@ -26,6 +29,12 @@ public class Gas extends Entity {
         super(position);
         this.model = model;
         this.color = color;
+        this.hitBox = new HitBox(1, 1, 1);
+    }
+
+    @Override
+    public HitBox getHitBox() {
+        return hitBox;
     }
 
     @Override
@@ -38,5 +47,14 @@ public class Gas extends Entity {
         );
 
         renderFrom(model, color, transformations);
+
+        if (DEBUG_ENABLED) {
+            List<Transformation> hitBoxTransformations = List.of(
+                    translate(vertex(getPosition().getX(), getPosition().getY(), getPosition().getZ())),
+                    rotate(vertex(1, 0, 0), 250),
+                    rotate(vertex(0, 0, 1), rotationAngle--)
+            );
+            renderDebug(hitBox, hitBoxTransformations);
+        }
     }
 }

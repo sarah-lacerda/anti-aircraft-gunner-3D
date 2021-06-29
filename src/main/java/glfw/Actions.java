@@ -1,21 +1,16 @@
 package glfw;
 
-import geometry.Vertex;
+import entity.Road;
+import entity.Terrain;
 import glfw.listener.KeyListener;
-import scene.Camera;
 import scene.SceneManager;
 
+import static geometry.Collision.handleCollisions;
+import static geometry.Collision.isPlayerOver;
 import static glfw.Commands.MOVE_PLAYER_FORWARD;
 import static glfw.Commands.MOVE_PLAYER_LEFT;
 import static glfw.Commands.MOVE_PLAYER_RIGHT;
 import static glfw.Commands.SWITCH_CAMERA_VIEW;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_DOWN;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_ADD;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_KP_SUBTRACT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_RIGHT;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_SPACE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_UP;
 
 public class Actions {
 
@@ -23,10 +18,10 @@ public class Actions {
     }
 
     public static void handleActions(SceneManager sceneManager) {
-        final Camera camera = sceneManager.getCamera();
-
         if (KeyListener.getInstance().isKeyPressed(MOVE_PLAYER_FORWARD.glfwKey)) {
-            sceneManager.movePlayerForward();
+            if (!isPlayerOver(Terrain.class, sceneManager)) {
+                sceneManager.movePlayerForward();
+            }
         }
         if (KeyListener.getInstance().isKeyPressed(MOVE_PLAYER_LEFT.glfwKey)) {
             sceneManager.movePlayerLeft();
@@ -38,30 +33,14 @@ public class Actions {
             sceneManager.toggleCameraView();
         }
 
-        // ################ TEMP DEBUG KEYS #########################
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_UP)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX(), currPos.getY() + 1, currPos.getZ()));
-        }
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_DOWN)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX(), currPos.getY() - 1, currPos.getZ()));
-        }
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_RIGHT)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX() + 1, currPos.getY(), currPos.getZ()));
-        }
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_LEFT)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX() - 1, currPos.getY(), currPos.getZ()));
-        }
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_KP_SUBTRACT)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX(), currPos.getY(), currPos.getZ() + 1));
-        }
-        if (KeyListener.getInstance().isKeyPressed(GLFW_KEY_KP_ADD)) {
-            Vertex currPos = camera.getPosition();
-            camera.setPosition(new Vertex(currPos.getX(), currPos.getY(), currPos.getZ() - 1));
+        haltPlayerIfGoingOverTerrain(sceneManager);
+        handleCollisions(sceneManager);
+    }
+
+    private static void haltPlayerIfGoingOverTerrain(SceneManager sceneManager) {
+        if (isPlayerOver(Terrain.class, sceneManager) && isPlayerOver(Road.class, sceneManager)) {
+            sceneManager.getPlayer().setMovingForward(false);
+            sceneManager.getPlayer().moveBackwards();
         }
     }
 

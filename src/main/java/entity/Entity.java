@@ -17,5 +17,7 @@ public abstract class Entity {
         this.position = position;
     }
 
+    public abstract HitBox getHitBox();
+
     public abstract void render();
 }

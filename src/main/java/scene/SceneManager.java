@@ -20,9 +20,11 @@ import java.util.List;
 import java.util.Random;
 
 import static entity.Gas.TOTAL_AMOUNT_OF_GAS_CONTAINERS;
+import static entity.Player.PLAYER_SPAWN_POSITION;
 import static geometry.Vertex.vertex;
 import static java.util.Arrays.stream;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.range;
 import static model.MapEntity.BUILDING_RESOURCE_NAME;
 import static model.MapEntity.ROAD_RESOURCE_NAME;
 import static model.MapEntity.TERRAIN_RESOURCE_NAME;
@@ -63,6 +65,14 @@ public class SceneManager {
                 .findFirst().orElseThrow(() -> new IllegalStateException("Player is not instantiated"));
     }
 
+    public List<Movable> getMovableEntities() {
+        return entities
+                .stream()
+                .filter(entity -> entity instanceof Movable)
+                .map(Movable.class::cast)
+                .collect(toList());
+    }
+
     public void movePlayerForward() {
         getPlayer().beginMoveForward();
     }
@@ -77,6 +87,14 @@ public class SceneManager {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public List<Entity> getEntities() {
+        return entities;
+    }
+
+    public boolean removeEntity(Entity entity) {
+        return entities.remove(entity);
     }
 
     public void render() {
@@ -168,16 +186,12 @@ public class SceneManager {
 
     private void spawnGasContainersAtRandomPlaces(String gasModelFilepath) {
         TriangleMesh modelMesh = TriangleMesh.loadFromTRI(gasModelFilepath);
-        for (int i = 0; i < TOTAL_AMOUNT_OF_GAS_CONTAINERS; i++) {
-            Road randomRoadTitle = randomRoadTile();
-            entities.add(
-                    new Gas(
-                            vertex(randomRoadTitle.getPosition().getX(), 1.5f, randomRoadTitle.getPosition().getZ()),
-                            modelMesh,
-                            Color.FIREBRICK
-                    )
-            );
-        }
+        range(0, TOTAL_AMOUNT_OF_GAS_CONTAINERS)
+                .mapToObj(i -> randomRoadTile()).map(randomRoadTitle -> new Gas(
+                vertex(randomRoadTitle.getPosition().getX(), 1.5f, randomRoadTitle.getPosition().getZ()),
+                modelMesh,
+                Color.FIREBRICK
+        )).forEach(entities::add);
     }
 
     private Road randomRoadTile() {
@@ -189,14 +203,6 @@ public class SceneManager {
     }
 
     private void createPlayer(String modelFilepath) {
-        entities.add(new Player(vertex(0, 1, 0), TriangleMesh.loadFromTRI(modelFilepath), Color.TEAL));
-    }
-
-    private List<Movable> getMovableEntities() {
-        return entities
-                .stream()
-                .filter(entity -> entity instanceof Movable)
-                .map(Movable.class::cast)
-                .collect(toList());
+        entities.add(new Player(PLAYER_SPAWN_POSITION, TriangleMesh.loadFromTRI(modelFilepath), Color.TEAL));
     }
 }
