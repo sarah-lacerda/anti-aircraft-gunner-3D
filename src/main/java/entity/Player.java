@@ -18,6 +18,10 @@ import static render.transformation.Transformation.rotate;
 import static render.transformation.Transformation.scale;
 import static render.transformation.Transformation.translate;
 import static scene.World.WORLD_WIDTH;
+import static scene.World.X_LOWER_BOUND;
+import static scene.World.X_UPPER_BOUND;
+import static scene.World.Z_LOWER_BOUND;
+import static scene.World.Z_UPPER_BOUND;
 import static util.Debug.DEBUG_ENABLED;
 
 public class Player extends Movable {
@@ -39,6 +43,13 @@ public class Player extends Movable {
         this.color = color;
         this.movingForward = false;
         hitBox = new HitBox(2f, 1f, 2f);
+    }
+
+    @Override
+    public void setPosition(Vertex position) {
+        if (isValid(position)) {
+            super.setPosition(position);
+        }
     }
 
     public void moveLeft() {
@@ -128,5 +139,12 @@ public class Player extends Movable {
             );
             renderDebug(hitBox, hitBoxTransformations);
         }
+    }
+
+    private boolean isValid(Vertex position) {
+        return position.getX() > X_LOWER_BOUND &&
+                position.getX() < X_UPPER_BOUND &&
+                position.getZ() > Z_LOWER_BOUND &&
+                position.getZ() < Z_UPPER_BOUND;
     }
 }
