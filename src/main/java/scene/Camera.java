@@ -66,25 +66,25 @@ public class Camera {
 
     public void update() {
         final Matrix4f matrix4f = new Matrix4f();
-            if (perspectiveView) {
-                matrix4f.setPerspective(
-                        (float) toRadians(45.0f),
-                        1.0f,
-                        0.01f,
-                        WORLD_WIDTH + WORLD_HEIGHT + WORLD_DEPTH
-                );
-            } else {
-                matrix4f.ortho(
-                        X_LOWER_BOUND,
-                        X_UPPER_BOUND,
-                        Y_LOWER_BOUND,
-                        Y_UPPER_BOUND,
-                        Z_LOWER_BOUND,
-                        WORLD_WIDTH + WORLD_HEIGHT + WORLD_DEPTH
-                );
-                setTarget(DEFAULT_ORTHOGRAPHIC_TARGET);
-                transitionPositionToDefaultOrthographic();
-            }
+        if (perspectiveView) {
+            matrix4f.setPerspective(
+                    (float) toRadians(45.0f),
+                    1.0f,
+                    0.01f,
+                    WORLD_WIDTH + WORLD_HEIGHT + WORLD_DEPTH
+            );
+        } else {
+            matrix4f.ortho(
+                    X_LOWER_BOUND - 22,
+                    X_UPPER_BOUND + 22,
+                    Y_LOWER_BOUND + 5,
+                    Y_UPPER_BOUND,
+                    Z_LOWER_BOUND,
+                    WORLD_WIDTH + WORLD_HEIGHT + WORLD_DEPTH
+            );
+            setTarget(DEFAULT_ORTHOGRAPHIC_TARGET);
+            transitionPositionToDefaultOrthographic();
+        }
         glMatrixMode(GL_PROJECTION);
         try (MemoryStack stack = MemoryStack.stackPush()) {
             glLoadMatrixf(matrix4f.get(stack.mallocFloat(16)));
