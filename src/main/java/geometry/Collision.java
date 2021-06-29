@@ -1,9 +1,15 @@
 package geometry;
 
+import entity.Building;
 import entity.Entity;
 import entity.Gas;
+import entity.Movable;
 import entity.Player;
+import entity.Road;
+import entity.enemy.Bomb;
 import scene.SceneManager;
+
+import java.util.List;
 
 public class Collision {
 
@@ -18,21 +24,39 @@ public class Collision {
                 .anyMatch(entity -> collisionBetween(entity, sceneManager.getPlayer()));
     }
 
+    public static boolean isPlayerOverDestroyedRoad(SceneManager sceneManager) {
+        return sceneManager
+                .getEntities()
+                .stream()
+                .filter(entity -> entity.getClass() == Road.class)
+                .filter(entity -> ((Road) entity).isDamaged())
+                .anyMatch(entity -> collisionBetween(entity, sceneManager.getPlayer()));
+    }
+
     public static void handleCollisions(SceneManager sceneManager) {
-        for (int i = 0; i < sceneManager.getMovableEntities().size(); i++) {
+        List<Movable> movables = sceneManager.getMovableEntities();
+        for (int i = 0; i < movables.size(); i++) {
             for (int j = 0; j < sceneManager.getEntities().size(); j++) {
-                final Entity entity1 = sceneManager.getEntities().get(i);
+                final Entity entity1 = movables.get(i);
                 final Entity entity2 = sceneManager.getEntities().get(j);
                 if (collisionBetween(entity1, entity2)) {
-                    if (entity1.getClass() == Player.class) {
-                        if (entity2.getClass() == Gas.class) {
+                    if (collisionBetweenPlayerAndGasContainer(entity1, entity2)) {
+                        sceneManager.removeEntity(entity2);
+                        ((Player) entity1).increaseFuel(20);
+                    } else if (entity1.getClass() == Bomb.class) {
+                        if (entity2.getClass() == Road.class) {
+                            ((Road) entity2).damage();
+                        } else if (entity2.getClass() == Building.class) {
                             sceneManager.removeEntity(entity2);
-                            ((Player) entity1).increaseFuel(20);
                         }
                     }
                 }
             }
         }
+    }
+
+    private static boolean collisionBetweenPlayerAndGasContainer(Entity potentialPlayer, Entity potentialGasContainer) {
+        return potentialPlayer.getClass() == Player.class && potentialGasContainer.getClass() == Gas.class;
     }
 
     private static boolean collisionBetween(Entity entity1, Entity entity2) {

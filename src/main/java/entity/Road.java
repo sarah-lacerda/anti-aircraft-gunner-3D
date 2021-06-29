@@ -9,11 +9,23 @@ public class Road extends Entity {
 
     private final Texture texture;
     private final HitBox hitBox;
+    private boolean damaged;
+
+    private static final Texture DAMAGED_TEXTURE = Texture.loadTextureFrom("damaged.png");
 
     public Road(Vertex position, Texture texture) {
         super(position);
         this.texture = texture;
         this.hitBox = new HitBox(1, 1, 1);
+        this.damaged = false;
+    }
+
+    public boolean isDamaged() {
+        return damaged;
+    }
+
+    public void damage() {
+        damaged = true;
     }
 
     @Override
@@ -23,6 +35,10 @@ public class Road extends Entity {
 
     @Override
     public void render() {
-        renderCellAt(getPosition(), texture);
+        if (damaged) {
+            renderCellAt(getPosition(), DAMAGED_TEXTURE);
+        } else {
+            renderCellAt(getPosition(), texture);
+        }
     }
 }

@@ -19,13 +19,13 @@ import util.Color;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static entity.Gas.TOTAL_AMOUNT_OF_GAS_CONTAINERS;
 import static entity.Player.PLAYER_SPAWN_POSITION;
 import static entity.enemy.Enemy.TOTAL_ENEMIES;
 import static geometry.Vertex.vertex;
 import static java.util.Arrays.stream;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.IntStream.range;
 import static model.MapEntity.BUILDING_RESOURCE_NAME;
 import static model.MapEntity.ROAD_RESOURCE_NAME;
@@ -77,7 +77,15 @@ public class SceneManager {
                 .stream()
                 .filter(entity -> entity instanceof Movable)
                 .map(Movable.class::cast)
-                .collect(toList());
+                .collect(Collectors.toUnmodifiableList());
+    }
+
+    public List<Enemy> getEnemies() {
+        return entities
+                .stream()
+                .filter(entity -> entity instanceof Enemy)
+                .map(Enemy.class::cast)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public void movePlayerForward() {
@@ -98,6 +106,10 @@ public class SceneManager {
 
     public List<Entity> getEntities() {
         return entities;
+    }
+
+    public void addEntity(Entity entity) {
+        entities.add(entity);
     }
 
     public boolean removeEntity(Entity entity) {
@@ -121,6 +133,10 @@ public class SceneManager {
         if (isCooldownForToggleCameraViewExpired()) {
             lastTimeCameraViewWasToggled = getCurrentTimeInSeconds();
         }
+    }
+
+    public void destroyEntitiesOutOfReach() {
+        entities.removeIf(entity -> entity.getPosition().getY() < 0);
     }
 
     private boolean isCooldownForToggleCameraViewExpired() {
@@ -218,4 +234,5 @@ public class SceneManager {
     private void createPlayer(String modelFilepath) {
         entities.add(new Player(PLAYER_SPAWN_POSITION, TriangleMesh.loadFromTRI(modelFilepath), TEAL));
     }
+
 }

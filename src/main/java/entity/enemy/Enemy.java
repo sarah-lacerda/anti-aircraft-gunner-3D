@@ -22,6 +22,7 @@ public class Enemy extends Movable {
 
     public static final String ENEMY_MODEL_FILEPATH = "model/duck.tri";
     public static final int TOTAL_ENEMIES = 3;
+    public static final float PROBABILITY_OF_SHOOTING = .005f;
 
     public Enemy(TriangleMesh model, Color color, int trajectoryId) {
         super(vertex(0, 0, 0));
@@ -29,6 +30,10 @@ public class Enemy extends Movable {
         this.color = color;
         this.hitBox = new HitBox(0, 0, 0);
         this.enemyTrajectory = new EnemyTrajectory(trajectoryId);
+    }
+
+    public Bomb shoot() {
+        return new Bomb(getPosition());
     }
 
     @Override
